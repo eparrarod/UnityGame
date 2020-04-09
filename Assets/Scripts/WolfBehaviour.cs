@@ -1,18 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WolfBehaviour : MonoBehaviour{
 
-	float maxMovementSpeed = 1f;
-	Rigidbody2D rigidBody;
-    Animator animator;
-    bool towardsRight = true;
+    Rigidbody2D rigidBody;
+    public Animator animator;
+    private float speed;
 
     // Start is called before the first frame update
     void Start(){
         rigidBody = GetComponent<Rigidbody2D>();
+        speed = 0.6f;
         animator = gameObject.GetComponent<Animator>();
+        animator.SetBool("walk", true);
     }
 
     // Update is called once per frame
@@ -21,22 +23,37 @@ public class WolfBehaviour : MonoBehaviour{
     }
 
     void FixedUpdate(){
-        float movementSpeed = Input.GetAxis("Horizontal")*maxMovementSpeed;
-        Vector2 v = new Vector2(movementSpeed, rigidBody.velocity.y);
+        Vector2 v = new Vector2(speed, 0);
         rigidBody.velocity = v;
 
-        animator.SetFloat("movementSpeed", Mathf.Abs(movementSpeed));
-        if((towardsRight && movementSpeed < 0)|| (!towardsRight && movementSpeed > 0)){
-            turnAround();
-            towardsRight = !towardsRight;
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walk") && Random.value < 1/(60f*3f)){
+            Debug.Log("walking to Howl");
+            animator.SetTrigger("Howl");
         }
-        Debug.Log(movementSpeed);
-        if(movementSpeed > -0.1 && movementSpeed < 0.1){
-            animator.SetTrigger("Stop");
-        }
+        // }else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Howl")){
+        //     if(Random.value < 1f/3f){
+        //         Debug.Log("howling to Bite");
+        //         //speed = 0;
+        //         animator.SetTrigger("Bite");
+        //     }else{
+        //         Debug.Log("howling to walk");
+        //         speed = 0.4f;
+        //         animator.SetTrigger("Walk");
+        //     }
+        // }
+
+    }
+
+    public void setSpeed(float s){
+        speed = s;
+    }
+
+    public float getSpeed(){
+        return speed;
     }
 
     void turnAround(){
+        speed *= -1;
         var t = transform.localScale;
         t.x *= -1;
         transform.localScale = t;
@@ -44,15 +61,5 @@ public class WolfBehaviour : MonoBehaviour{
 
     void OnTriggerEnter2D(Collider2D col){
         turnAround();
-        //Debug.Log(col.gameObject.name + " po : " + gameObject.name + " : " + Time.time);
     }
-
-    void currentState(){
-
-    }
-
-    void changeState(){
-
-    }
-
 }
