@@ -13,6 +13,8 @@ public class KnightBehaviour : MonoBehaviour{
     //public Text txt;
     public float health=100;
     float speed;
+    bool attacking = false;
+    FlagController ctrFlag;
 
     // Start is called before the first frame update
     void Start(){
@@ -25,6 +27,7 @@ public class KnightBehaviour : MonoBehaviour{
     // Update is called once per frame
     void Update(){
         slider.value = health;
+        attack();
     }
 
     void FixedUpdate(){
@@ -39,11 +42,8 @@ public class KnightBehaviour : MonoBehaviour{
         }
         Debug.Log(movementSpeed);
         if(Mathf.Abs(movementSpeed) < 0.01){
-            animator.SetTrigger("Stop");
+            animator.SetTrigger("stop");
         }
-
-
-
     }
 
     void turnAround(){
@@ -55,6 +55,29 @@ public class KnightBehaviour : MonoBehaviour{
     void OnTriggerEnter2D(Collider2D col){
         //turnAround();
         //Debug.Log(col.gameObject.name + " po : " + gameObject.name + " : " + Time.time);
+    }
+
+    void attack(){
+        if (Input.GetButton("Fire1")){
+            Debug.Log("Fire pressed");
+        }
+
+        if(Mathf.Abs(Input.GetAxis("Fire1")) > 0.01f){
+            Debug.Log("fire1 pressed");
+            if(attacking == false){
+                attacking = true;
+                animator.SetTrigger("attack");
+                if(ctrFlag != null){
+                    ctrFlag.hit();
+                }
+            }
+        }else{
+                attacking = false;
+        } 
+    }
+
+    public void setFlagController(FlagController control){
+        ctrFlag = control;
     }
 
 }
